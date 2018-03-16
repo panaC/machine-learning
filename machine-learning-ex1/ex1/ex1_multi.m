@@ -108,6 +108,8 @@ fprintf('cost function : %f\n', computeCostMulti(X, y, theta));
 price = 0; % You should change this
 price = [ones(1), ([1650, 3] - mu) ./ sigma] * theta;
 
+J_history
+
 
 % ============================================================
 
