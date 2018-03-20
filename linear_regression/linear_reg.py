@@ -17,8 +17,8 @@ class linear_reg(object):
         self.theta = np.matrix([[0],[0],[0]])
 
         def featureNormalize(X):
-            mu = np.matrix([X[:,0].mean(), X[:,1].mean()])
-            sigma = np.matrix([X[:,0].std(), X[:,1].std()])
+            mu = X.mean(axis = 0)
+            sigma = X.std(axis = 0)
             X_norm = (X - mu) / sigma
             return X_norm, mu, sigma
 
