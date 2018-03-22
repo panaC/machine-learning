@@ -6,15 +6,15 @@ class linear_reg(object):
     """docstring for linear_reg."""
     def __init__(self, X, y):
         super(linear_reg, self).__init__()
-        self.X = X
+        self.X = np.matrix(X)
         self.y = y.reshape(-1,1)
-        self.theta = np.matrix([[0],[0],[0]])
         self.learn(self.X, self.y)
 
     def learn(self, X, y, alpha=0.01, num_iters=10000):
-        self.X = X
-        self.y = y
-        self.theta = np.matrix([[0],[0],[0]])
+        self.X = np.matrix(X)
+        self.y = y.reshape(-1,1)
+        # Rajouter 2 () apres np.zeros
+        self.theta = np.zeros((np.size(self.X[0,:]) + 1, 1))
 
         def featureNormalize(X):
             mu = X.mean(axis = 0)
@@ -30,12 +30,11 @@ class linear_reg(object):
             return (1 / (2 * m) * np.matmul((np.matmul(X,theta) - y).T, (np.matmul(X,theta) - y))).item(0)
 
         def gradientDescentMulti(X, y, theta, alpha, num_iters):
-            m = np.size(X)
+            m = np.size(X[:,0])
             j_history = []
             #Boucler sur le nombre d'itérations
             for i in range(num_iters):
-                tmp = theta - alpha / m * (np.matmul(X.T, (np.matmul(X,theta) - y)))
-                theta = tmp
+                theta = theta - alpha / m * (np.matmul(X.T, (np.matmul(X,theta) - y)))
                 j_history.append(cost(X, y, theta))
             return theta, j_history
 

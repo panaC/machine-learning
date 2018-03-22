@@ -17,9 +17,27 @@ grad = zeros(size(theta));
 %               Compute the partial derivatives and set grad to the partial
 %               derivatives of the cost w.r.t. each parameter in theta
 
-J = 1 / m * ( -1 * y' * log(sigmoid(X * theta)) - (1 - y)' * log(1 - sigmoid(X * theta))) + lambda / ( 2 * m ) * ((theta.^2)' * ones(size(theta)))
+%                                                               '
+%J = 1 / m * sum( -1 * y' * log(sigmoid(X * theta)) - (1 - y)' * log(1 - sigmoid(X * theta))) + lambda / ( 2 * m ) * ((theta.^2)' * ones(size(theta)))
 
-grad = 1 / m * X' * (sigmoid(X * theta) - y) + lambda / m * theta
+%grad_0 = 1 / m * X' * (sigmoid(X * theta) - y)
+%grad = 1 / m * X' * (sigmoid(X * theta) - y) + lambda / m * theta
+
+%grad_0 = 1 / m * sum((sigmoid(X * theta(1)) - y) * X(1))
+%grad = 1 / m * X' * (sigmoid(X * theta) - y) + lambda / m * theta
+%grad_0
+%grad = [grad_0, grad]
+
+%solution github
+%J = ( (1 / m) * sum(-y'*log(sigmoid(X*theta)) - (1-y)'*log( 1 - sigmoid(X*theta))) ) + (lambda/(2*m))*sum(theta(2:length(theta)).*theta(2:length(theta)))
+J = 1 / m * sum( -1 * y' * log(sigmoid(X * theta)) - (1 - y)' * log(1 - sigmoid(X * theta))) + lambda / ( 2 * m ) * ((theta(2:length(theta)).^2)' * ones(size(theta(2:length(theta)))))
+
+%grad = (1 / m) * sum( X .* repmat((sigmoid(X*theta) - y), 1, size(X,2)) );
+%size(grad)
+grad = 1 / m * (sigmoid(X * theta) - y)' * X
+%size(grad)
+
+grad(2:length(grad)) = grad(2:length(grad)) + (lambda/m)*theta(2:length(theta))';
 
 
 % =============================================================

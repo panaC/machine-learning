@@ -24,10 +24,11 @@ clear ; close all; clc
 %  The first two columns contains the X values and the third column
 %  contains the label (y).
 
-data = load('ex2data2.txt');
+data = load('ex2data1.txt');
 X = data(:, [1, 2]); y = data(:, 3);
+X = featureNormalize(X);
 
-plotData(X, y);
+plotData(X, y)
 
 % Put some labels
 hold on;
@@ -107,7 +108,7 @@ pause;
 initial_theta = zeros(size(X, 2), 1);
 
 % Set regularization parameter lambda to 1 (you should vary this)
-lambda = 3;
+lambda = 1;
 
 % Set Options
 options = optimset('GradObj', 'on', 'MaxIter', 400);
@@ -127,6 +128,9 @@ ylabel('Microchip Test 2')
 
 legend('y = 1', 'y = 0', 'Decision boundary')
 hold off;
+
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
 
 % Compute accuracy on our training set
 p = predict(theta, X);
