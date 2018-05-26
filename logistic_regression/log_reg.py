@@ -22,36 +22,46 @@ class log_reg(object):
         for i in range(1, deg + 1):
             for j in range(0, i + 1):
                 ret = np.c_[ret, np.multiply(np.power(X1, i - j), np.power(X2, j))]
-        return ret
+        return np.matrix(ret)
 
     def learn(self, X, y, l=1):
-        self.theta = np.zeros(np.size(self.X[0,:]))
+        self.theta = np.matrix(np.zeros(X.shape[1]))
 
         def sigmoid(Z):
-            return (1 / (1 + np.exp(-1 * Z)))
+            return np.matrix((1.0 / (1.0 + np.exp(-1.0 * Z))))
 
-        def costFunctionReg(X, y, theta, l):
+        def costFunction(theta, X, y, l):
             m = np.size(X[:,0])
-            h = sigmoid(np.matmul(X, theta))
-            h = np.matrix(h)
-            j = 1 / m * np.sum(np.matmul(-1 * y.T, np.log(h)) - np.matmul((1 - y).T, np.log(1 - h)))
-            j = j + (l / (2 * m) * np.sum(np.power(theta[1,np.size(theta[:,1:])], 2)))
-            j = np.matrix(j)
+            h = sigmoid(np.matmul(X, theta.T))
+            a = np.asarray(-y) * np.asarray(np.log(sigmoid(np.matmul(X, theta.T))))
+            b = np.asarray(1.0 - y) * np.asarray(np.log(1 - sigmoid(np.matmul(X, theta.T))))
+            c = l / (2 * m) * np.sum(np.power(theta[0,1:], 2))
+            J = 1.0 / m * np.sum(a - b) + c
+            return J
 
-            grad =  1 / m * np.matmul((h - y).T, X)
-            grad[1:] = grad[1:] + l / m * theta[1,np.size(theta[:,1:])].T
-
-            return j.flatten(), grad
+        def gradFunction(theta, X, y, l):
+            m = np.size(X[:,0])
+            h = sigmoid(np.matmul(X, theta.T))
+            a = h - y
+            g = 1 / m * np.matmul(a.T, X)
+            print(g)
+            g[0,1:np.size(g)] = g[0,1:np.size(g)] + l / m * theta[0,1:]
+            return g
 
         #print(costFunctionReg(self.X, self.y, self.theta, l))
 
-        def ft_reg(theta):
-            return costFunctionReg(self.X, self.y, theta, l)
+        def f(theta):
+            return np.ndarray.flatten(costFunction(theta, X, y, 1.0))
 
-        print(fmin_bfgs(ft_reg, x0=self.theta, maxiter=400))
+        def fprime(theta):
+            return np.ndarray.flatten(gradFunction(theta, X, y, 1.0))
+
+        print(fmin_bfgs(f, self.theta, fprime, maxiter=400))
+        #print(fmin_bfgs(ft_reg, self.theta, maxiter=400))
+        #print(ft_reg(self.initial_theta))
 
 if __name__ == "__main__":
-    data = pd.read_csv("ex2data2.txt")
+    data = np.genfromtxt("ex2data2.txt", delimiter=',')
     data = np.matrix(data, float)
     X = data[:,[0,1]]
     y = data[:,[2]]
