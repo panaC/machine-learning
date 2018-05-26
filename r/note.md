@@ -1,6 +1,6 @@
-#notes
+# notes
 
-####for loading and handle the new dataset :
+#### for loading and handle the new dataset :
 
 list variable in workplace :
 - ls()
