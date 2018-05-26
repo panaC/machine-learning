@@ -5,6 +5,8 @@
 list variable in workplace :
 - ls()
 
+loading data :
+
 ~~~
 # define the filename
 
@@ -19,3 +21,18 @@ dataset <- read.csv(filename, header=FALSE)
 colnames(dataset) <- c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width","Species")
 
 ~~~
+
+info on data :
+
+- class(data)
+- dim(data)
+- nrow(data)
+- ncol(data)
+- names(data)
+- head(data)
+- tail(data)
+- summary(data)
+- table(data$col)
+- str(data)
+
+cf -> first_iris_data.r in github
