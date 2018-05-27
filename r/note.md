@@ -35,4 +35,8 @@ info on data :
 - table(data$col)
 - str(data)
 
-cf -> first_iris_data.r in github
+*cf -> first_iris_data.r in github*
+
+**for missing data :**
+- library(mice)
+- md.pattern(data) : 0 = missing cf graph
