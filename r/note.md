@@ -22,7 +22,7 @@ colnames(dataset) <- c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width"
 
 ~~~
 
-info on data :
+**info on data :**
 
 - class(data)
 - dim(data)
@@ -35,8 +35,13 @@ info on data :
 - table(data$col)
 - str(data)
 
-*cf -> first_iris_data.r in github*
+```cf -> first_iris_data.r on github```
 
 **for missing data :**
+
 - library(mice)
 - md.pattern(data) : 0 = missing cf graph
+
+**For known how many missing value :**
+
+- nrow(data) - nrow(na.omit(data))
