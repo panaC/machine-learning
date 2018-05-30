@@ -1,80 +1,118 @@
+## usefull function
+sapply(trsf, function(x) sum(x))
+
+library(splitstackshape)
+cSplit(dataset, "voies.admin", ',')
+
+tmp_2 <- str_split_fixed(dataset$voies.admin, ',', Inf)
+
+#####
+## start
+#####
+
 library(lattice)
 library(ggplot2)
 library(caret) # ml
 library(mice) ## missing data
 library(dplyr) # data manipulation
+library(tidyr)
+library(stringr)
 
 ## LOAD CSV
 
-data <- read.csv("train.csv")
-data_predict <- read.csv("test.csv")
-submit <- read.csv("gender_submission.csv")
+data <- read.csv("boites_medicaments_train.csv", sep = ';')
+data_predict <- read.csv("boites_medicaments_test.csv", sep = ';')
 
 ## handle data
 
 dataset <- bind_rows(data, data_predict)
 
+##
+
+str(dataset)
+names(dataset)
+head(dataset)
+dim(dataset)
+
+##
+
+### rm col unused
+
+# backup
+dataset_origin <- dataset
+
+dataset <- subset(dataset, select = -c(libelle))
+# apply factor for each libelle col
+dataset[grep("libelle", names(dataset))] <- lapply(dataset[grep("libelle", names(dataset))], function(x) as.factor(x))
+str(dataset)
+# rm uniqu level factor
+dataset$etat.commerc[dataset$etat.commerc == 'Déclaration de suspension de commercialisation'] <- 'Déclaration d\'arrêt de commercialisation' 
+dataset$etat.commerc <- as.factor(dataset$etat.commerc)
+
+str(dataset)
+
+# tx.rembours as factor 5 lvl
+dataset$tx.rembours <- as.factor(dataset$tx.rembours)
+
+# voie.admin as factor 
+table(dataset$statut.admin)
+statut.admin.var <- c("Autorisation abrogée", "Autorisation archivée", "Autorisation retirée", "Autorisation suspendue")
+dataset$statut.admin[dataset$statut.admin %in% statut.admin.var]  <- 'Autorisation retirée'
+table(dataset$statut.admin)
+dataset$statut.admin <- as.factor(dataset$statut.admin)
+str(dataset)
+table(dataset$statut.admin)
+
+# rm titulaire and substante !! A UTILISER PLUS TARD // et ID a remettre dans le csv genere
+dataset <- subset(dataset, select = -c(titulaires, substances, id))
+
+# factor voies.admin
+sort(table(dataset$voies.admin))
+
+
+dataset <- dataset[]
+tst <- sapply(dataset$voies.admin, function(x) strsplit(x, ',')[[1]])
+tst_name <- unique(unlist(tst))
+
+for (j in 1:length(tst_name)){
+  dataset[,paste("voies.admin", tst_name[[j]], sep = '.')] <- 0
+}
+
+for (i in 1:length(tst)) {
+  for (j in 1:length(tst[[i]])){
+    print(tst[[i]][[j]])
+    dataset[i,paste("voies.admin", tst[[i]][[j]], sep = '.')] <- 1
+  }
+}
+
+# apply factor for each libelle col
+dataset[grep("voies.admin.", names(dataset))] <- lapply(dataset[grep("voies.admin.", names(dataset))], function(x) as.factor(x))
+dataset <- subset(dataset, select = -c(voies.admin))
+
+tmp <- data.frame(c(1:nrow(dataset)))
+
+
+tst_factor <- lapply(tst, function(x) as.factor(x))
+
+#
+
+# dummy variable test
+dmy_type_proc <- subset(dataset, select = c(type.proc))
+dmy <- dummyVars("~ .", data=dmy_type_proc)
+predict(dmy, newdata = dmy_type_proc)
+trsf <- data.frame(predict(dmy, newdata = dmy_type_proc))
+trsf
+
+##
+
 str(dataset)
 head(dataset)
 sapply(dataset, function(x) sum(is.na(x)))
 
-# extract type
-dataset$Title <- gsub('(.*, )|(\\..*)', '', dataset$Name)
-sapply(dataset, function(x) sum(is.na(x)))
-str(dataset)
-table(dataset$Title)
 
-# compress factor level type
-rare_title <- c('Dona', 'Lady', 'the Countess','Capt', 'Col', 'Don', 
-                'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer')
-
-# Also reassign mlle, ms, and mme accordingly
-dataset$Title[dataset$Title == 'Mlle']        <- 'Miss' 
-dataset$Title[dataset$Title == 'Ms']          <- 'Miss'
-dataset$Title[dataset$Title == 'Mme']         <- 'Mrs'
-dataset$Title[dataset$Title %in% rare_title]  <- 'Rare Title'
-
-dataset$Title <- as.factor(dataset$Title)
-dataset <- subset(dataset, select = -c(Name))
-
-# split first letter cabin
-dataset$Deck <- factor(sapply(dataset$Cabin, function(x) strsplit(x, NULL)[[1]][1]))
-dataset <- subset(dataset, select = -c(Cabin))
-
-# remove Ticket
-dataset <- subset(dataset, select = -c(Ticket))
-
-# na Fare
-dataset$Fare[is.na(dataset$Fare)] <- mean(dataset$Fare, na.rm = TRUE)
-
-# na age
-#dataset$Age[is.na(dataset$Age)] <- mean(dataset$Age, na.rm = TRUE)
+##
 
 
-# Set a random seed
-set.seed(7)
-# Perform mice imputation, excluding certain less-than-useful variables:
-mice_mod <- mice(data[, !names(data) %in% c('PassengerId', 'Survived', 'Deck')], method='rf') 
-# Save the complete output 
-mice_output <- complete(mice_mod)
-# Replace Age variable from the mice model.
-data$Age <- mice_output$Age
-# Show new number of missing Age values
-sum(is.na(data$Age))
-
-
-# remove Deck many na values
-dataset <- subset(dataset, select = -c(Deck))
-
-# split data and test from dataset
-data <- dataset[1:nrow(data), ]
-data_predict <- dataset[(nrow(data)+1):nrow(dataset), ]
-
-sapply(data, function(x) sum(is.na(x)))
-sapply(data_predict, function(x) sum(is.na(x)))
-
-str(data)
-str(data_predict)
 
 ## train
 
