@@ -45,3 +45,23 @@ colnames(dataset) <- c("Sepal.Length","Sepal.Width","Petal.Length","Petal.Width"
 **For known how many missing value :**
 
 - nrow(data) - nrow(na.omit(data))
+
+**select data.frame :**
+
+```
+iris[,1] #on sélectionne la colonne 1, c'est-à-dire la première colonne
+iris[,3] #on sélectionne la colonne 3
+iris[,2:3] #on sélectionne les colonnes 2 et 3
+iris[,c(5,2)] #on sélectionne les colonnes 5 et 2 dans cet ordre
+
+iris[1,] #on sélectionne la ligne 1
+iris[3,] #on sélectionne la ligne 3
+iris[2:3,] #on sélectionne les lignes 2 et 3
+iris[c(5,2),] #on sélectionne les lignes 5 et 2 dans cet ordre
+ ```
+ 
+
+## Website
+
+https://machinelearningmastery.com/evaluate-machine-learning-algorithms-with-r/
+https://machinelearningmastery.com/feature-selection-with-the-caret-r-package/

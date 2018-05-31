@@ -54,13 +54,13 @@ dataset$Fare[is.na(dataset$Fare)] <- mean(dataset$Fare, na.rm = TRUE)
 # Set a random seed
 set.seed(7)
 # Perform mice imputation, excluding certain less-than-useful variables:
-mice_mod <- mice(data[, !names(data) %in% c('PassengerId', 'Survived', 'Deck')], method='rf') 
+mice_mod <- mice(dataset[, !names(dataset) %in% c('PassengerId', 'Survived', 'Deck')], method='rf') 
 # Save the complete output 
 mice_output <- complete(mice_mod)
 # Replace Age variable from the mice model.
-data$Age <- mice_output$Age
+dataset$Age <- mice_output$Age
 # Show new number of missing Age values
-sum(is.na(data$Age))
+sum(is.na(dataset$Age))
 
 
 # remove Deck many na values
@@ -147,6 +147,7 @@ fit.c50.predict <- predict(fit.c50, data_predict)
 table(fit.c50.predict, submit$Survived)
 
 #86.84% accuracy
+#88.75% accuracy whith age
 (sum(fit.c50.predict == submit$Survived)) / nrow(submit)
 
 
@@ -155,4 +156,13 @@ fit.rf.predict <- predict(fit.rf, data_predict)
 table(fit.rf.predict, submit$Survived)
 
 #84.21% accuracy
+#81.57% accuracy whith age
 (sum(fit.rf.predict == submit$Survived)) / nrow(submit)
+
+## save
+
+# Save the solution to a dataframe with two columns: PassengerId and Survived (prediction)
+solution <- data.frame(PassengerID = data_predict$PassengerId, Survived = fit.c50.predict)
+
+# Write the solution to file
+write.csv(solution, file = 'rf_mod_Solution.csv', row.names = F)
