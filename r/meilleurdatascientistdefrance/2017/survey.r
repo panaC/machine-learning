@@ -167,7 +167,7 @@ table(rf_pred, data_test$Survived)
 preProcess=c("center", "scale")
 control <- trainControl(method="repeatedcv", number=10, repeats=3)
 seed <- 7
-metric <- "RMSE"
+metric <- "Accuracy"
 
 # Linear Discriminant Analysis
 set.seed(seed)
