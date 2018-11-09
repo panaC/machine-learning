@@ -8,6 +8,7 @@ On this repository there are several folders :
 - One folder about Anddrew NG Coursera ML courses with matlab files
 - One folder with from scratch python Linear reg and Logic reg
 - One folder contains jupyther notebook about ML with Scikit Learn
+  - Tennis prediction on a personnal dataset (part of a big projet)
 
 I have also participate at many Kaggle Challenge : [kaggle](https://www.kaggle.com/pleroux)
 
